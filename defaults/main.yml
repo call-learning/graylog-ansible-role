@@ -1,13 +1,18 @@
 ---
+graylog_version: "3.2"
+
+# Other requirements
+# https://docs.graylog.org/en/3.2/pages/installation.html#system-requirements
+# Elasticsearch < 7.x
+# Mongodb 3.6 or 4.0
+graylog_mongodb_version:  "4.0"
+graylog_elasticsearch_version: '6.8.8'
+graylog_elasticsearch_heap_size_min: 1g
+graylog_elasticsearch_heap_size_max: 1g
+graylog_elasticsearch_cluster_name: "graylog"
+graylog_java_version: "8"
 
 # Requirements
-graylog_java_ppa:                  "ppa:webupd8team/java"
-graylog_java_repo:                 "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main"
-graylog_java_src_repo:             "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main"
-graylog_java_repo_keyserver:       "keyserver.ubuntu.com"
-graylog_java_repo_key:             "EEA14886"
-graylog_version:                   "3.0"
-
 graylog_package_state:             "present"
 graylog_apt_deb_url:               "https://packages.graylog2.org/repo/packages/graylog-{{ graylog_version }}-repository_latest.deb"
 graylog_manage_apt_repo:           True
@@ -134,14 +139,14 @@ graylog_outputbuffer_processor_threads_core_pool_size: 3
 graylog_outputbuffer_processor_threads_max_pool_size:  30
 
 # MongoDB
-graylog_mongodb_ubuntu_repo:                         "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse"
-graylog_mongodb_ubuntu_keyserver:                    "keyserver.ubuntu.com"
-graylog_mongodb_ubuntu_key:                          "2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
-graylog_mongodb_debian_repo:                         "deb http://repo.mongodb.org/apt/debian {{ ansible_distribution_release }}/mongodb-org/3.6 main"
-graylog_mongodb_debian_keyserver:                    "keyserver.ubuntu.com"
-graylog_mongodb_debian_key:                          "2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
-graylog_mongodb_redhat_repo:                         "https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.6/x86_64/"
-graylog_mongodb_redhat_key:                          "https://www.mongodb.org/static/pgp/server-3.6.asc"
+graylog_mongodb_ubuntu_repo: "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu \
+{{ansible_distribution_release}}/mongodb-org/{{ graylog_mongodb_version }} multiverse"
+graylog_mongodb_ubuntu_key:  "https://www.mongodb.org/static/pgp/server-{{graylog_mongodb_version}}.asc"
+graylog_mongodb_debian_repo: "deb http://repo.mongodb.org/apt/debian \
+{{ ansible_distribution_release }}/mongodb-org/{{ graylog_mongodb_version }} main"
+graylog_mongodb_debian_key:  "https://www.mongodb.org/static/pgp/server-{{graylog_mongodb_version}}.asc"
+graylog_mongodb_redhat_repo: "https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/{{graylog_mongodb_version}}/x86_64/"
+graylog_mongodb_redhat_key:  "https://www.mongodb.org/static/pgp/server-{{graylog_mongodb_version}}.asc"
 
 graylog_mongodb_uri:                                 "mongodb://127.0.0.1:27017/graylog"
 graylog_mongodb_max_connections:                     100

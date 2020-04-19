@@ -1,0 +1,13 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  tasks:
+    - name: Get the site frontpage
+      action: uri url=http://testgraylog.test return_content=yes validate_certs=false
+      register: webpage
+    - name: Check that the page contains
+      assert:
+        that:
+          - "'<title>Graylog Web Interface</title>' in webpage.content"

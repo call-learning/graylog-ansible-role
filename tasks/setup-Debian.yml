@@ -17,12 +17,9 @@
     state: present
     dpkg_options: "force-all"
   when: graylog_manage_apt_repo
-  register: "install_repo"
 
-- name: "APT cache should be updated"
-  apt:
-    update_cache: True
-  when: install_repo.changed
+- name: Update apt cache.
+  apt: update_cache=true
 
 - name: "Graylog server package should be installed"
   apt:

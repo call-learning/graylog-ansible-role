@@ -17,12 +17,12 @@
         (ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('15', '>='))
       }}
 
-- include: "mongodb-{{ ansible_os_family }}.yml"
+- name: "Setup MongoDB"
+  include_tasks: "mongodb-{{ ansible_os_family }}.yml"
   when: graylog_install_mongodb
 
-- include: "install-java.yml"
-  when: graylog_install_java
+- name: "Run OS specific Setups"
+  include_tasks: "setup-{{ ansible_os_family }}.yml"
 
-- include: "setup-{{ ansible_os_family }}.yml"
-
-- include: "server.yml"
+- name: "Setup Graylog"
+  include_tasks: "server.yml"

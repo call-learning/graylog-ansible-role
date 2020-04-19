@@ -1,0 +1,36 @@
+---
+
+- name: Converge
+  hosts: all
+  become: true
+
+  vars_files:
+    - vars.yml
+
+  pre_tasks:
+    - name: Update apt cache.
+      apt: update_cache=true cache_valid_time=600
+      when: ansible_os_family == 'Debian'
+      changed_when: false
+    - name: Add required dependencies.
+      apt:
+        name:
+          - apt-transport-https
+          - gnupg2
+        state: present
+      when: ansible_os_family == 'Debian'
+    # See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199 and
+    # https://github.com/geerlingguy/ansible-role-java/issues/64
+    - name: "Ensure 'man' directory exists."
+      file:
+        path: /usr/share/man/man1
+        state: directory
+        recurse: true
+      when:
+        - ansible_distribution == 'Ubuntu'
+        - ansible_distribution_version == '18.04'
+  roles:
+    - name: elastic.elasticsearch # This will also set the right Java JDK version (1.8)
+    - name: geerlingguy.nginx
+    # Finally the role under test
+    - name: graylog-ansible-role

@@ -1,0 +1,46 @@
+---
+
+# See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199 and
+# https://github.com/geerlingguy/ansible-role-java/issues/64
+- name: "Ensure 'man' directory exists."
+  file:
+    path: /usr/share/man/man1
+    state: directory
+    recurse: true
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == '18.04'
+
+- name: "Ensure Java is installed"
+  package:
+    name: "{{ graylog_java_package }}"
+    state: "present"
+  when: graylog_install_java
+
+- name: "Set Command to check for Java Version"
+  include_tasks: "get-java-path-{{ ansible_os_family }}.yml"
+
+- name: "Set Real Path for JDK"
+  set_fact:
+    java_home: "{{ target_jdk_path.stdout }}"
+  when: target_jdk_path is defined and target_jdk_path.rc == 0
+
+- name: "Check that target JDK is installed"
+  assert:
+    that: java_home is defined
+    fail_msg: "The target JAVA {{ graylog_java_version }} should be installed."
+
+- name: "Assign the binary path to the target JDK"
+  set_fact:
+    graylog_java_binary: "{{ java_home }}/bin/java"
+
+- name: "Assign the binary path to the target JDK"
+  set_fact:
+    graylog_java_binary: "{{ java_home }}/bin/java"
+    graylog_java_home: "{{ java_home }}"
+
+- name: "Make sure that we have the right java alternative Setup for the host {{ graylog_java_version }}"
+  alternatives:
+    name: java
+    path: "{{ graylog_java_binary }}"
+    link: /usr/bin/java

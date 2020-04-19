@@ -1,0 +1,50 @@
+graylog_install_elasticsearch: False
+graylog_install_mongodb:       True
+graylog_install_nginx:         False
+graylog_install_java:          True
+
+graylog_not_testing:           False
+
+es_version: "{{ graylog_elasticsearch_version }}"
+es_enable_xpack: False
+es_instance_name: "{{ graylog_elasticsearch_cluster_name }}"
+es_heap_size: "{{ graylog_elasticsearch_heap_size_min }}"
+es_scripts: False
+es_templates: False
+es_version_lock: False
+es_config:
+  node.name: "{{ graylog_elasticsearch_cluster_name }}"
+  cluster.name: "{{ graylog_elasticsearch_cluster_name }}"
+  http.port: 9200
+  transport.tcp.port: 9300
+  network.host: "127.0.0.1"
+
+#graylog_web_endpoint_uri: "http://127.0.0.1:9000/api/"
+graylog_password_secret: "2jueVqZpwLLjaWxV" # generate with: pwgen -s 96 1
+graylog_root_password_sha2: "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
+graylog_http_bind_address: "127.0.0.1:9000"
+graylog_http_publish_uri: "http://127.0.0.1:9000/"
+graylog_http_external_uri: "http://127.0.0.1:9000/"
+
+#
+# NginX
+#
+# See https://docs.graylog.org/en/3.2/pages/configuration/web_interface.html
+nginx_vhosts:
+  - listen: "80 default_server"
+    server_name: "testgraylog.test"
+    state: "present"
+    template: "{{ nginx_vhost_template }}"
+    filename: "graylog.conf"
+    extra_parameters: |
+      location / {
+         proxy_http_version  1.1;
+         proxy_set_header Host $host;
+         proxy_set_header X-Forwarded-Host $host;
+         proxy_set_header X-Forwarded-Server $host;
+         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+         proxy_set_header X-Graylog-Server-URL http://$server_name/;
+         proxy_pass       http://127.0.0.1:9000;
+      }
+
+nginx_remove_default_vhost: True

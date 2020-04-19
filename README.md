@@ -31,22 +31,22 @@ Here is an example of a playbook targeting Vagrant (Ubuntu Xenial):
   remote_user: "ubuntu"
   become: True
   vars:
-    es_enable_xpack: False
-    es_instance_name: "graylog"
-    es_heap_size: "1g"
-    es_config:
-      node.name: "graylog"
-      cluster.name: "graylog"
-      http.port: 9200
-      transport.tcp.port: 9300
-      network.host: "127.0.0.1"
-    graylog_install_java: False # Elasticsearch role already installed Java
+    graylog_install_elasticsearch: True
+    graylog_install_mongodb:       True
+    graylog_install_nginx:         False
+    graylog_install_java:          False
+    elasticsearch_version: '6.x'
+    elasticsearch_heap_size_min: 1g
+    elasticsearch_heap_size_max: 2g
+    elasticsearch_cluster_name: "graylog"
     graylog_password_secret: "2jueVqZpwLLjaWxV" # generate with: pwgen -s 96 1
     graylog_root_password_sha2: "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
     graylog_http_bind_address: "{{ ansible_default_ipv4.address }}:9000"
     graylog_http_publish_uri: "http://{{ ansible_default_ipv4.address }}:9000/"
     graylog_http_external_uri: "http://{{ ansible_default_ipv4.address }}:9000/"
   roles:
+    - name: geerlingguy.elasticsearch
+    - name: geerlingguy.nginx
     - role: "Graylog2.graylog-ansible-role"
       tags:
         - "graylog"
@@ -87,33 +87,28 @@ More detailed example
 - hosts: "server"
   become: True
   vars:
-    es_instance_name: "graylog"
-    es_scripts: False
-    es_templates: False
-    es_version_lock: False
-    es_heap_size: "1g"
-    es_config:
-      node.name: "graylog"
-      cluster.name: "graylog"
-      http.port: 9200
-      transport.tcp.port: 9300
-      network.host: "127.0.0.1"
-      node.data: True
-      node.master: True
-    graylog_install_java: False # Elasticsearch role already installed Java
+    graylog_install_elasticsearch: True
+    graylog_install_mongodb:       True
+    graylog_install_nginx:         False
+    graylog_install_java:          False
+    elasticsearch_version: '6.x'
+    elasticsearch_heap_size_min: 1g
+    elasticsearch_heap_size_max: 2g
+    elasticsearch_cluster_name: "graylog"
     graylog_password_secret: "2jueVqZpwLLjaWxV" # generate with: pwgen -s 96 1
     graylog_root_password_sha2: "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
     graylog_http_bind_address: "{{ ansible_default_ipv4.address }}:9000"
     graylog_http_publish_uri: "http://{{ ansible_default_ipv4.address }}:9000/"
     graylog_http_external_uri: "http://{{ ansible_default_ipv4.address }}:9000/"
-
-    nginx_sites:
-      graylog:
-        - "listen 80"
-        - "server_name graylog"
-        - |
+    nginx_vhosts:
+    - listen: "80"
+        server_name: "testgraylog.test"
+        state: "present"
+        template: "{{ nginx_vhost_template }}"
+        filename: "graylog.conf"
+        extra_parameters: |
           location / {
-            proxy_pass http://localhost:9000/;
+            proxy_pass http://127.0.0.1:9000/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -125,8 +120,10 @@ More detailed example
             client_max_body_size 8m;
             client_body_buffer_size 128k;
           }
-
+    nginx_remove_default_vhost: True
   roles:
+    - name: geerlingguy.elasticsearch
+    - name: geerlingguy.nginx
     - role: "Graylog2.graylog-ansible-role"
       tags:
         - "graylog"
@@ -141,6 +138,32 @@ Explicit playbook of roles
 It's good to be explicit, these are all the roles that you need to run for Graylog.
 
 Note: in this example vars are in a more appropriate place at `group_vars/group/vars`
+
+
+```yaml
+- name: "Apply roles for Graylog servers"
+  hosts: "graylog_servers"
+  become: True
+  vars:
+    graylog_install_elasticsearch: False
+    graylog_install_mongodb:       False
+    graylog_install_nginx:         False
+
+  roles:
+    - name: geerlingguy.elasticsearch
+    tags:
+        - "elasticsearch"
+        - "graylog_servers"
+    - name: geerlingguy.nginx
+      tags:
+        - "nginx"
+        - "graylog_servers"
+
+    - role: "graylog2.graylog-ansible-role"
+      tags:
+        - "graylog"
+        - "graylog_servers"
+```
 
 ```yaml
 - name: "Apply roles for Graylog servers"
@@ -172,9 +195,15 @@ Note: in this example vars are in a more appropriate place at `group_vars/group/
 Conditional role dependencies
 -----------------------------
 
-Dependencies can be enabled/disabled with the `host_vars` `graylog_install_*`.
-Take look into [meta/main.yml][3] for more information. Keep in mind that you
-have to install all dependencies even when they are disabled to prevent errors.
+This role is dependent on Elasticsearch and Nginx being installed and configured properly.
+
+For this you can either use:
+
+ - "elastic.elasticsearch" and  "jdauphant.nginx" roles
+ - "geerlingguy.elasticsearch" and "geerlingguy.nginx"
+
+These are not installed by default and need to be installed before running the role.
+
 
 Tests
 -----

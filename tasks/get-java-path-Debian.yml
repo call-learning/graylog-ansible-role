@@ -1,0 +1,8 @@
+---
+
+- name: "Get target JDK binary path (Debian)"
+  shell:
+    cmd: "/usr/sbin/update-java-alternatives --list | grep 1.{{ graylog_java_version }}  | tr -s ' ' | cut -f 3 -d ' '"
+  register: target_jdk_path
+  changed_when: false
+  when: ansible_os_family == 'Debian'

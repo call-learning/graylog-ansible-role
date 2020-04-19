@@ -11,9 +11,8 @@
 
 - name: "Package dependencies should be installed"
   yum:
-    name: "{{ item }}"
+    name: "{{ graylog_mongodb_package_dependencies | default([]) }}"
     state: present
-  with_items: "{{ graylog_mongodb_package_dependencies | default([]) }}"
 
 - name: "MongoDB should be installed"
   yum:
@@ -42,12 +41,14 @@
     mode: 0644
   notify: "restart mongod"
 
+- debug: var=ansible_selinux
 - name: "SELinux port access should be granted for MongoDB"
   seport:
     ports: 27017
     proto: "tcp"
     setype: "mongod_port_t"
     state: "present"
+  when: ansible_selinux is defined and ansible_selinux.status != 'disabled'
 
 - meta: "flush_handlers"
 

@@ -2,4 +2,7 @@
 
 graylog_server_defaults_file_path: "/etc/default/graylog-server"
 graylog_mongodb_data_path:         "/var/lib/mongodb"
-graylog_java:                      "openjdk-8-jre-headless"
+# With Debian, java packages are for example:
+# openjdk-11-jre-headless
+# openjdk-8-jre-headless
+graylog_java_package: "openjdk-{{ graylog_java_version }}-jre-headless"

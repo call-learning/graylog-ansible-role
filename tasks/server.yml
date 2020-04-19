@@ -1,5 +1,8 @@
 ---
 
+- name: "Java related setups"
+  include_tasks: "java.yml"
+
 - name: "Directory should be created with correct ownership and privileges"
   file:
     path: "/etc/graylog/server"

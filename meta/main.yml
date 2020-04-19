@@ -1,11 +1,6 @@
 ---
 
-dependencies:
-  - role: "elastic.elasticsearch"
-    when: graylog_install_elasticsearch
-
-  - role: "jdauphant.nginx"
-    when: graylog_install_nginx
+dependencies: []
 
 galaxy_info:
   author: "Marius Sturm"
@@ -17,13 +12,14 @@ galaxy_info:
     - name: "Ubuntu"
       versions:
         - "xenial"
-        - "zesty"
+        - "bionic"
     - name: "Debian"
       versions:
-        - "jessie"
+        - "stretch"
     - name: "EL"
       versions:
         - "7"
+        - "8"
   galaxy_tags:
     - "monitoring"
     - "system"

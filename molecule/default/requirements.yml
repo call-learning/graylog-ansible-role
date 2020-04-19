@@ -1,6 +1,5 @@
 ---
 
-- src: geerlingguy.java
 - src: elastic.elasticsearch
   version: 7.6.2
 - src: geerlingguy.nginx
