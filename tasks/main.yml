@@ -24,5 +24,11 @@
 - name: "Run OS specific Setups"
   include_tasks: "setup-{{ ansible_os_family }}.yml"
 
+- name: "Ensure Java is installed"
+  package:
+    name: "{{ graylog_java_package }}"
+    state: "present"
+  when: graylog_install_java
+
 - name: "Setup Graylog"
   include_tasks: "server.yml"

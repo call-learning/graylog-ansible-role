@@ -1,8 +1,0 @@
----
-
-- name: "Get target JDK binary path (Redhat)"
-  shell:
-    cmd: "update-alternatives --display java | grep '^/' | awk '{print $1}' | grep 1.{{ graylog_java_version }} | head -1"
-  register: target_jdk_path
-  changed_when: false
-  when: ansible_os_family == 'Redhat'

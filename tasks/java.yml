@@ -10,20 +10,34 @@
   when:
     - ansible_distribution == 'Ubuntu'
     - ansible_distribution_version == '18.04'
+    - graylog_install_java | bool
 
-- name: "Ensure Java is installed"
-  package:
-    name: "{{ graylog_java_package }}"
-    state: "present"
-  when: graylog_install_java
+- debug:
+    var: ansible_os_family
+
+- name: "Set Command to check for Java Version (Debian)"
+  set_fact:
+    java_check_command: "/usr/sbin/update-java-alternatives --list | grep 1.{{ graylog_java_version }}  | tr -s ' ' | cut -f 3 -d ' '"
+  when: ansible_os_family == 'Debian'
+
+- name: "Set Command to check for Java Version (RedHat)"
+  set_fact:
+    java_check_command: "update-alternatives --display java | grep '^/' | awk '{print $1}' | grep 1.{{ graylog_java_version }} | head -1"
+  when: ansible_os_family == 'RedHat'
+
+- name: "Get target JDK binary path"
+  shell:
+    cmd: "{{ java_check_command }}" # noqa 305
+  register: target_jdk_path
+  changed_when: false
+
+- name: "Assert JDK is found"
+  assert:
+    that: target_jdk_path is defined and target_jdk_path.rc == 0
 
 - name: "Set Command to check for Java Version"
-  include_tasks: "get-java-path-{{ ansible_os_family }}.yml"
-
-- name: "Set Real Path for JDK"
   set_fact:
-    java_home: "{{ target_jdk_path.stdout }}"
-  when: target_jdk_path is defined and target_jdk_path.rc == 0
+    java_home: "{{ target_jdk_path.stdout |  regex_replace('^(.*)bin/java$', '\\1') }}"
 
 - name: "Check that target JDK is installed"
   assert:
