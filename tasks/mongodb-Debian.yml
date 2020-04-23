@@ -43,9 +43,13 @@
   when:
     - use_system_d
     - ansible_distribution == 'Ubuntu'
-  notify:
-    - "reload systemd configuration"
-    - "restart mongod"
+
+- name: "Reload systemd configuration"
+  systemd:
+    daemon_reload: yes
+  when:
+    - use_system_d
+    - ansible_distribution == 'Ubuntu'
 
 - name: "MongoDB should be configured"
   template:
@@ -54,9 +58,13 @@
     owner: "root"
     group: "root"
     mode: 0644
-  notify: "restart mongod"
 
-- meta: "flush_handlers"
+- name: "Restart MongoDB"
+  service:
+    name: "mongod"
+    state: "restarted"
+    enabled: "yes"
+
 - name: "Wait for MongoDB to startup"
   wait_for:
     host: "127.0.0.1"

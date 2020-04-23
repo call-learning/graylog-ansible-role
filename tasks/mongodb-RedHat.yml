@@ -28,9 +28,12 @@
     mode: 0644
   when:
     - use_system_d
-  notify:
-    - "reload systemd configuration"
-    - "restart mongod"
+
+- name: "Reload systemd configuration"
+  systemd:
+    daemon_reload: yes
+  when:
+    - use_system_d
 
 - name: "MongoDB should be configured"
   template:
@@ -39,7 +42,12 @@
     owner: "root"
     group: "root"
     mode: 0644
-  notify: "restart mongod"
+
+- name: "Restart MongoDB"
+  service:
+    name: "mongod"
+    state: "restarted"
+    enabled: "yes"
 
 - debug: var=ansible_selinux
 - name: "SELinux port access should be granted for MongoDB"
@@ -49,8 +57,6 @@
     setype: "mongod_port_t"
     state: "present"
   when: ansible_selinux is defined and ansible_selinux.status != 'disabled'
-
-- meta: "flush_handlers"
 
 - name: "Wait for MongoDB to startup"
   wait_for:

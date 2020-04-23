@@ -15,5 +15,5 @@ graylog_mongodb_package_dependencies: "{{ (ansible_distribution_major_version | 
 # With Redhat, java packages are for example:
 # java-1.8.0-openjdk.x86_64
 # java-11-openjdk.x86_64
-graylog_java_package: "java-{{ (graylog_java_version == '8') | ternary('1.8.0'| graylog_java_version) }}-openjdk.x86_64"
+graylog_java_package: "java-{{ (graylog_java_version == '8') | ternary('1.8.0', graylog_java_version) }}-openjdk.x86_64"
 
