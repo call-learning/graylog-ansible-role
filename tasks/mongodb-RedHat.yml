@@ -34,6 +34,7 @@
     daemon_reload: yes
   when:
     - use_system_d
+  changed_when: False
 
 - name: "MongoDB should be configured"
   template:
@@ -48,6 +49,7 @@
     name: "mongod"
     state: "restarted"
     enabled: "yes"
+  changed_when: False
 
 - debug: var=ansible_selinux
 - name: "SELinux port access should be granted for MongoDB"
