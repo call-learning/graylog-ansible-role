@@ -4,11 +4,12 @@ graylog_server_defaults_file_path:    "/etc/sysconfig/graylog-server"
 graylog_mongodb_data_path:            "/var/lib/mongo"
 graylog_mongodb_package_dependencies_rh7:
   - "libselinux-python"
+  - "policycoreutils-python"
 graylog_mongodb_package_dependencies_rh8:
   - "python3-libselinux"
   - "python3-policycoreutils"
 
-graylog_mongodb_package_dependencies: "{{ (ansible_distribution_major_version | int >= 7)
+graylog_mongodb_package_dependencies: "{{ (ansible_distribution_major_version | int > 7)
  | ternary( graylog_mongodb_package_dependencies_rh8, graylog_mongodb_package_dependencies_rh7)
  | list }}"
 # With Redhat, java packages are for example:
