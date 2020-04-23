@@ -29,8 +29,12 @@
       when:
         - ansible_distribution == 'Ubuntu'
         - ansible_distribution_version == '18.04'
+    - name: Install elasticsearch
+      import_role:
+        name: elastic.elasticsearch # This will also set the right Java JDK version (1.8)
+      tags: molecule-idempotence-notest # This is because Elasticsearch role is not idempotent
+    - name: Install Ngnix
+      import_role:
+        name: geerlingguy.nginx
   roles:
-    - name: elastic.elasticsearch # This will also set the right Java JDK version (1.8)
-    - name: geerlingguy.nginx
-    # Finally the role under test
     - name: graylog-ansible-role

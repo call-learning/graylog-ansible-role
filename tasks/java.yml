@@ -58,3 +58,4 @@
     name: java
     path: "{{ graylog_java_binary }}"
     link: /usr/bin/java
+  changed_when: false
