@@ -57,7 +57,7 @@
     proto: "tcp"
     setype: "mongod_port_t"
     state: "present"
-  when: ansible_selinux is defined and ansible_selinux.status != 'disabled'
+  when: ansible_selinux is defined and ansible_selinux.status == "enabled"
 
 - name: "Wait for MongoDB to startup"
   wait_for:
