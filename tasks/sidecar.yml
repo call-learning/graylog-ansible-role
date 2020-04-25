@@ -1,0 +1,33 @@
+---
+
+- name: "Run OS specific Setups"
+  include_tasks: "setup-packages-{{ ansible_os_family }}.yml"
+  vars:
+    graylog_generic_apt_deb_url: "{{ graylog_apt_deb_url }}"
+    graylog_generic_yum_rpm_url: "{{ graylog_yum_rpm_url }}"
+
+- name: "Graylog server package should be installed"
+  package:
+    name: "graylog-sidecar{% if graylog_sidecar_version is defined %}={{ graylog_sidecar_version }}{% endif %}"
+    state: present
+
+- name: "Configure sidecar"
+  template:
+    src: collector_sidecar.yml
+    dest: "{{ sidecar_config_file }}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Activate collector service"
+  command: graylog-collector-sidecar -service install
+  become: true
+  ignore_errors: true
+
+- name: "Restart collector sidecar"
+  service:
+    name: "{{ sidecar_service }}"
+    state: restarted
+    enabled: true
+  become: true
+

@@ -1,0 +1,24 @@
+---
+server_url: {{graylog_http_publish_uri}}
+update_interval: {{graylog_sidecar.update_interval}}
+tls_skip_verify: {{graylog_sidecar.tls_skip_verify}}
+send_status: {{graylog_sidecar.send_status}}
+list_log_files: {{graylog_sidecar.list_log_files}}
+node_id: {{graylog_sidecar.node_id}}
+collector_id: {{graylog_sidecar.collector_id}}
+cache_path: {{graylog_sidecar.cache_path}}
+log_path: {{graylog_sidecar.log_path}}
+log_rotation_time: {{graylog_sidecar.log_rotation_time}}
+log_max_age: {{graylog_sidecar.log_max_age}}
+tags:
+{% for tag in graylog_sidecar_tags %}
+  - {{ tag }}
+{% endfor %}
+
+backends:
+{% for backend in graylog_sidecar_backends %}
+  - name: {{ backend.name }}
+    enabled: {{ backend.enabled }}
+    binary_path: {{ backend.binary_path }}
+    configuration_path: {{ backend.configuration_path }}
+{% endfor %}

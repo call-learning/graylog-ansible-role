@@ -1,0 +1,8 @@
+---
+
+- name: "Repositories should be updated"
+  yum:
+    name: "{{ graylog_generic_yum_rpm_url }}"
+    state: "present"
+    update_cache: True
+  when: graylog_manage_yum_repo

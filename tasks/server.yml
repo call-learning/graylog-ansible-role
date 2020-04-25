@@ -1,6 +1,20 @@
 ---
 
-- name: "Java related setups"
+- name: "Graylog server package should be installed"
+  package:
+    name: "graylog-server{% if graylog_server_version is defined %}={{ graylog_server_version }}{% endif %}"
+    state: "{{ graylog_package_state }}"
+
+- name: "Set elasticsearch priority to {{ graylog_es_debian_pin_version }} apt_preferences"
+  template:
+    src: "apt_preferences.d/debian_elasticsearch.j2"
+    dest: "/etc/apt/preferences.d/elasticsearch"
+    owner: "root"
+    mode: 0644
+  when: ansible_os_family == 'Debian'
+
+
+- name: "Retrieve java related setups"
   include_tasks: "java.yml"
 
 - name: "Directory should be created with correct ownership and privileges"
@@ -17,7 +31,6 @@
     owner: "graylog"
     group: "graylog"
     mode: 0644
-  notify: "restart graylog-server"
 
 - name: "Graylog server defaults should be configured"
   template:
@@ -26,14 +39,18 @@
     owner: "graylog"
     group: "graylog"
     mode: 0644
-  notify: "restart graylog-server"
 
 - name: "Graylog server should start after reboot"
   file:
     path: "/etc/init/graylog-server.override"
     state: "absent"
 
-- meta: "flush_handlers"
+- name: "Restart graylog-server"
+  service:
+    name: "graylog-server"
+    state: "restarted"
+    enabled: "yes"
+  changed_when: False
 
 - name: "Wait for Graylog server to startup"
   uri:

@@ -1,0 +1,9 @@
+---
+
+- src: elastic.elasticsearch
+  version: 7.6.2
+- src: geerlingguy.nginx
+
+- src: elastic.beats
+  version: 7.6.2
+- src: geerlingguy.nginx

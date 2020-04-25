@@ -1,6 +1,8 @@
 ---
 
-- src: geerlingguy.java
 - src: elastic.elasticsearch
   version: 7.6.2
-- src: geerlingguy.nginx
+
+- name: jdauphant.nginx
+  src: "https://github.com/jdauphant/ansible-role-nginx.git"
+  version: v2.21.2

@@ -18,14 +18,17 @@
   include_tasks: "mongodb-{{ ansible_os_family }}.yml"
   when: graylog_install_mongodb
 
-- name: "Run OS specific Setups"
-  include_tasks: "setup-{{ ansible_os_family }}.yml"
-
 - name: "Ensure Java is installed"
   package:
     name: "{{ graylog_java_package }}"
     state: "present"
   when: graylog_install_java
+
+- name: "Run OS specific Setups"
+  include_tasks: "setup-packages-{{ ansible_os_family }}.yml"
+  vars:
+    graylog_generic_apt_deb_url: "{{ graylog_apt_deb_url }}"
+    graylog_generic_yum_rpm_url: "{{ graylog_yum_rpm_url }}"
 
 - name: "Setup Graylog"
   include_tasks: "server.yml"

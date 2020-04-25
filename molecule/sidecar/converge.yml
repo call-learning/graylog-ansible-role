@@ -1,0 +1,78 @@
+---
+
+- name: Converge Graylog
+  hosts: graylog
+  become: true
+  gather_facts: true
+  vars_files:
+    - vars-graylog.yml
+  pre_tasks:
+    - name: Update apt cache.
+      apt: update_cache=true cache_valid_time=600
+      when: ansible_os_family == 'Debian'
+      changed_when: false
+    - name: Add required dependencies.
+      apt:
+        name:
+          - apt-transport-https
+          - gnupg2
+        state: present
+      when: ansible_os_family == 'Debian'
+    # See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199 and
+    # https://github.com/geerlingguy/ansible-role-java/issues/64
+    - name: "Ensure 'man' directory exists."
+      file:
+        path: /usr/share/man/man1
+        state: directory
+        recurse: true
+      when:
+        - ansible_distribution == 'Ubuntu'
+        - ansible_distribution_version == '18.04'
+    - name: Install elasticsearch
+      import_role:
+        name: elastic.elasticsearch # This will also set the right Java JDK version (1.8)
+      tags: molecule-idempotence-notest # This is because Elasticsearch role is not idempotent
+    - name: Install Ngnix
+      import_role:
+        name: geerlingguy.nginx
+  roles:
+    - name: graylog-ansible-role
+
+
+- name: Converge Sidecar
+  hosts: sidecar
+  become: true
+  gather_facts: true
+  vars_files:
+    - vars-sidecar.yml
+  tasks:
+    - name: Update apt cache.
+      apt: update_cache=true cache_valid_time=600
+      when: ansible_os_family == 'Debian'
+      changed_when: false
+    - name: Add required dependencies.
+      apt:
+        name:
+          - apt-transport-https
+          - gnupg2
+        state: present
+      when: ansible_os_family == 'Debian'
+    # See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199 and
+    # https://github.com/geerlingguy/ansible-role-java/issues/64
+    - name: "Ensure 'man' directory exists."
+      file:
+        path: /usr/share/man/man1
+        state: directory
+        recurse: true
+      when:
+        - ansible_distribution == 'Ubuntu'
+        - ansible_distribution_version == '18.04'
+    - name: Install elasticsearch
+      import_role:
+        name: elastic.beats
+      tags: molecule-idempotence-notest # This is because Elasticsearch role is not idempotent
+    - name: Install sidecar
+      import_role:
+         name: graylog-ansible-role
+         tasks_from: sidecar
+

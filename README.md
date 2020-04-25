@@ -11,7 +11,7 @@ Dependencies
 ------------
 
 - **Only Ansible versions > 2.2.0 are supported.**
-- Java 8 - Ubuntu Xenial and up support OpenJDK 8 by default. For other distributions consider backports accordingly
+- Java 8 - Ubuntu Xenial and up support OpenJDK 8 by default. For other distributions consider backports accordingly.
 - [Elasticsearch][1]
 - [NGINX][2]
 - Tested on Ubuntu 16.04 / Ubuntu 18.04 / Debian 9 / Centos 7
@@ -81,7 +81,7 @@ More detailed example
 - Set up `roles_path = ./roles` in `ansible.cfg` (`[defaults]` block)
 - Install role `ansible-galaxy install Graylog2.graylog-ansible-role`
 - Install role's dependencies `ansible-galaxy install -r roles/Graylog2.graylog-ansible-role/requirements.yml`
-- Set up playbook (see example below):
+- Set up playbook (see example below and note that it can be different depending on the role used to ):
 
 ```yaml
 - hosts: "server"
@@ -209,41 +209,13 @@ Tests
 -----
 
 One can test the role on the supported distributions (see `meta/main.yml` for the complete list),
-by using the Docker images provided.
+by using the molecule playbook provided in the test folder.
 
-Example for Debian Jessie and Ubuntu Xenial:
+    molecule test --scenario-name default
+    
+You can also test the sidecar installation and tests:
 
-    $ cd graylog-ansible-role
-    $ docker build -t graylog-ansible-role-jessie -f tests/support/jessie_22.Dockerfile tests/support
-    $ docker run -it -v $PWD:/role graylog-ansible-role-jessie
-
-For Xenial, just replace `jessie` with `xenial` in the above commands.
-
-Example for CentOS 7 and Ubuntu Xenial:
-
-Due to how `systemd` works with Docker, the following approach is suggested:
-
-    $ cd graylog-ansible-role
-    $ docker build -t graylog-ansible-role-centos7 -f tests/support/centos7_22.Dockerfile tests/support
-    $ docker run -d --privileged -it -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v $PWD:/role:ro graylog-ansible-role-centos7 /usr/sbin/init
-    $ DOCKER_CONTAINER_ID=$(docker ps | grep centos | awk '{print $1}')
-    $ docker logs $DOCKER_CONTAINER_ID
-    $ docker exec -it $DOCKER_CONTAINER_ID /bin/bash -xec "bash -x run-tests.sh"
-    $ docker ps -a
-    $ docker stop $DOCKER_CONTAINER_ID
-    $ docker rm -v $DOCKER_CONTAINER_ID
-
-Ubuntu Xenial:
-
-    $ cd graylog-ansible-role
-    $ docker build -t graylog-ansible-role-xenial -f tests/support/xenial_22.Dockerfile tests/support
-    $ docker run -d --privileged -it -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v $PWD:/role:ro graylog-ansible-role-xenial /sbin/init
-    $ DOCKER_CONTAINER_ID=$(docker ps | grep xenial | awk '{print $1}')
-    $ docker logs $DOCKER_CONTAINER_ID
-    $ docker exec -it $DOCKER_CONTAINER_ID /bin/bash -xec "bash -x run-tests.sh"
-    $ docker ps -a
-    $ docker stop $DOCKER_CONTAINER_ID
-    $ docker rm -v $DOCKER_CONTAINER_ID
+    molecule test --scenario-name sidecar
 
 Further Reading
 ----------------
@@ -262,7 +234,7 @@ Author: Marius Sturm (<marius@graylog.com>) and [contributors][4]
 License: Apache 2.0
 
 [1]: https://github.com/elastic/ansible-elasticsearch
-[2]: https://github.com/jdauphant/ansible-role-nginx
+[2]: https://github.com/jdauphant/ansible-role-nginx or https://github.com/geerlingguy/ansible-role-nginx 
 [3]: https://github.com/Graylog2/graylog-ansible-role/blob/master/meta/main.yml
 [4]: https://github.com/Graylog2/graylog2-ansible-role/graphs/contributors
 [5]: https://pablodav.github.io/post/graylog/graylog_ansible
