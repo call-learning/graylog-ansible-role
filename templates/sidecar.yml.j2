@@ -1,15 +1,20 @@
 ---
-server_url: {{graylog_http_publish_uri}}
-update_interval: {{graylog_sidecar.update_interval}}
-tls_skip_verify: {{graylog_sidecar.tls_skip_verify}}
-send_status: {{graylog_sidecar.send_status}}
-list_log_files: {{graylog_sidecar.list_log_files}}
-node_id: {{graylog_sidecar.node_id}}
-collector_id: {{graylog_sidecar.collector_id}}
-cache_path: {{graylog_sidecar.cache_path}}
-log_path: {{graylog_sidecar.log_path}}
-log_rotation_time: {{graylog_sidecar.log_rotation_time}}
-log_max_age: {{graylog_sidecar.log_max_age}}
+server_url: {{ graylog_sidecar.server_url }}
+server_api_token: {{ graylog_sidecar.server_api_token }}
+node_id: {{ graylog_sidecar.node_id }}
+node_name: {{ graylog_sidecar.node_name }}
+update_interval: {{ graylog_sidecar.update_interval | default(10) }}
+tls_skip_verify: {{ graylog_sidecar.tls_skip_verify| default('false') }}
+send_status: {{ graylog_sidecar.send_status | default('true') }}
+list_log_files: {{ graylog_sidecar.list_log_files | default('[]') }}
+cache_path: {{ graylog_sidecar.cache_path | default('/var/cache/graylog-sidecar') }}
+collector_configuration_directory: {{ graylog_sidecar.collector_configuration_directory | default('/var/lib/graylog-sidecar/generated') }}
+
+log_path: {{ graylog_sidecar.log_path | default('/var/log/graylog-sidecar') }}
+log_rotate_max_file_size: {{graylog_sidecar.log_rotate_max_file_size | default('10MiB') }}
+log_rotate_keep_files: {{ graylog_sidecar.log_rotate_keep_files | default('7') }}
+collector_binaries_whitelist: {{ graylog_sidecar.collector_binaries_whitelist | default('[]') }}
+
 tags:
 {% for tag in graylog_sidecar_tags %}
   - {{ tag }}

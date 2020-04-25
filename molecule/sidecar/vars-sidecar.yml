@@ -9,3 +9,18 @@ beat_conf:
         paths:
           - /var/log/*.log
 
+graylog_sidecar:
+  server_url: "http://testgraylog.test:9000/"
+  server_api_token: ""
+  node_id: "unique-id-string-for-cart"
+  node_name: "SideCar Node"
+
+
+graylog_sidecar_tags:
+  - sidecar
+
+graylog_sidecar_backends:
+  - name: "filebeat"
+    enabled: true
+    binary_path: "/usr/bin/filebeat"
+    configuration_path: "/etc/filebeat/filebeat.yml"

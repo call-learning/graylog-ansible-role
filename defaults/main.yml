@@ -181,7 +181,6 @@ graylog_non_proxy_hosts:                    ""
 # Web UI
 graylog_web_enable:                  True
 graylog_web_listen_uri:              "http://0.0.0.0:9000/"
-graylog_web_endpoint_uri:            ""
 graylog_enable_cors:                 True
 graylog_enable_gzip:                 True
 graylog_web_enable_tls:              False
@@ -205,5 +204,3 @@ graylog_install_mongodb:       True
 graylog_install_nginx:         True
 graylog_install_java:          True
 
-# Disable steps which break tests
-graylog_not_testing:           True

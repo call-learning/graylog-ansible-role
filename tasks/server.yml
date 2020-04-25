@@ -61,4 +61,3 @@
   until: result.status == 200
   retries: 60
   delay: 5
-  when: graylog_not_testing
