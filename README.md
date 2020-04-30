@@ -20,9 +20,6 @@ Quickstart
 ----------
 
 - You need at least 4GB of memory to run Graylog
-- Generate the password hash for the admin user:
-  - `echo -n yourpassword | sha256sum     # Linux`
-  - `echo -n yourpassword | shasum -a 256 # Mac`
 
 Here is an example of a playbook targeting Vagrant (Ubuntu Xenial):
 
@@ -40,7 +37,7 @@ Here is an example of a playbook targeting Vagrant (Ubuntu Xenial):
     elasticsearch_heap_size_max: 2g
     elasticsearch_cluster_name: "graylog"
     graylog_password_secret: "2jueVqZpwLLjaWxV" # generate with: pwgen -s 96 1
-    graylog_root_password_sha2: "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+    graylog_root_password: "password"
     graylog_http_bind_address: "{{ ansible_default_ipv4.address }}:9000"
     graylog_http_publish_uri: "http://{{ ansible_default_ipv4.address }}:9000/"
     graylog_http_external_uri: "http://{{ ansible_default_ipv4.address }}:9000/"
@@ -216,6 +213,22 @@ by using the molecule playbook provided in the test folder.
 You can also test the sidecar installation and tests:
 
     molecule test --scenario-name sidecar
+
+Sidecar Installation
+--------------------
+
+This role also contains the sidecar installation script. It can be setup by including the role and hooking up to the 
+right task such as:
+
+    - name: Install sidecar
+      import_role:
+         name: graylog-ansible-role
+         tasks_from: sidecar
+         
+You can have a look at the tests var-sidecar.yml in the molecule/sidecar folder for how to set it up.
+
+Note: it will try to generate a new API key if needed so sidecar can connect directly to graylog.
+ 
 
 Further Reading
 ----------------

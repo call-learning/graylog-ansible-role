@@ -16,7 +16,7 @@ log_rotate_keep_files: {{ graylog_sidecar.log_rotate_keep_files | default('7') }
 collector_binaries_whitelist: {{ graylog_sidecar.collector_binaries_whitelist | default('[]') }}
 
 tags:
-{% for tag in graylog_sidecar_tags %}
+{% for tag in graylog_sidecar.tags %}
   - {{ tag }}
 {% endfor %}
 

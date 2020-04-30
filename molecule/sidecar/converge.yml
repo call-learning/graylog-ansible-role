@@ -1,5 +1,7 @@
 ---
 
+
+
 - name: Converge Graylog
   hosts: graylog
   become: true
@@ -45,6 +47,7 @@
   gather_facts: true
   vars_files:
     - vars-sidecar.yml
+    - vars-graylog.yml
   tasks:
     - name: Update apt cache.
       apt: update_cache=true cache_valid_time=600
@@ -75,4 +78,3 @@
       import_role:
          name: graylog-ansible-role
          tasks_from: sidecar
-

@@ -21,15 +21,15 @@ graylog_yum_rpm_url:               "https://packages.graylog2.org/repo/packages/
 graylog_manage_yum_repo:           True
 graylog_es_debian_pin_version:     "6.*"
 
-graylog_sidecar_apt_deb_url:       "https://packages.graylog2.org/repo/packages/graylog-sidecar-repository_{{ graylog_sidecar_version }}_all.deb"
-graylog_sidecar_yum_rpm_url:       "https://packages.graylog2.org/repo/packages/graylog-{{ graylog_sidecar_version }}.noarch.rpm"
+graylog_sidecar_apt_deb_url:       "https://packages.graylog2.org/repo/packages/graylog-sidecar-repository_1-2_all.deb"
+graylog_sidecar_yum_rpm_url:       "https://packages.graylog2.org/repo/packages/graylog-sidecar-repository-1-2.noarch.rpm"
 
 # General
 graylog_is_master:            True
 graylog_node_id_file:         "/etc/graylog/server/node-id"
 graylog_password_secret:      "2jueVqZpwLLjaWxV"
 graylog_root_username:        "admin"
-graylog_root_password_sha2:   "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+graylog_root_password:        "password"
 graylog_bin_dir:              "/usr/share/graylog-server/bin"
 graylog_data_dir:             "/var/lib/graylog-server"
 graylog_plugin_dir:           "/usr/share/graylog-server/plugin"
@@ -204,3 +204,32 @@ graylog_install_mongodb:       True
 graylog_install_nginx:         True
 graylog_install_java:          True
 
+# Sidecar
+
+beats_version: 7.6.2
+beat: filebeat
+beat_conf:
+  filebeat:
+    inputs:
+      - type: log
+        enabled: true
+        paths:
+          - /var/log/*.log
+
+graylog_sidecar:
+  server_url: "{{ graylog_http_publish_uri }}api"
+  server_api_token: ""
+  node_id: "unique-id-string-for-cart"
+  node_name: "SideCar Node"
+  tags:
+    - sidecar
+
+graylog_sidecar_backends:
+  - name: "filebeat"
+    enabled: true
+    binary_path: "/usr/bin/filebeat"
+    configuration_path: "/etc/filebeat/filebeat.yml"
+
+
+graylog_sidecar_config_file: "/etc/graylog/sidecar/sidecar.yml"
+graylog_sidecar_service: "graylog-sidecar"

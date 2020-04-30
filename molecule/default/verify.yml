@@ -4,6 +4,15 @@
 - name: Verify
   hosts: all
   tasks:
+    - name: "Wait for Graylog server to startup"
+      uri:
+        url: "http://testgraylog.test"
+        status_code: 200
+        validate_certs: False
+      register: result
+      until: result.status == 200
+      retries: 60
+      delay: 5
     - name: Get the site frontpage
       action: uri url=http://testgraylog.test return_content=yes validate_certs=false
       register: webpage

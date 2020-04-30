@@ -5,7 +5,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: testgraylog
+  - name: testgraylog.test
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu1804}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
@@ -13,28 +13,32 @@ platforms:
     privileged: true
     pre_build_image: true
     exposed_ports:
-      - 443/tcp
-      - 80/tcp
+      - 10443/tcp
+      - 10080/tcp  # For internal network
+      - 5044/tcp
+      - 5044/udp  # This will be used for graylog
     published_ports:
-      - 0.0.0.0:10443:443/tcp
-      - 0.0.0.0:10080:80/tcp
+      - 0.0.0.0:10443:10443/tcp
+      - 0.0.0.0:10080:10080/tcp
     etc_hosts: "{'testgraylog.test':  '127.0.0.1'}"
+    networks:
+      - name: graylog
+    network_mode: bridge
+    purge_networks: true
     groups:
       - graylog
-  - name: testsidecar
+  - name: testsidecar.test
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu1804}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     privileged: true
     pre_build_image: true
-    exposed_ports:
-      - 443/tcp
-      - 80/tcp
-    published_ports:
-      - 0.0.0.0:10443:443/tcp
-      - 0.0.0.0:10080:80/tcp
-    etc_hosts: "{'testgraylog.test':  '127.0.0.1'}"
+    etc_hosts: "{'testsidecar.test':  '127.0.0.1'}"
+    networks:
+      - name: graylog
+    network_mode: bridge
+    purge_networks: true
     groups:
       - sidecar
 provisioner:

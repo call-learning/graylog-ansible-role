@@ -19,7 +19,7 @@ es_config:
 
 #graylog_web_endpoint_uri: "http://127.0.0.1:9000/api/"
 graylog_password_secret: "2jueVqZpwLLjaWxV" # generate with: pwgen -s 96 1
-graylog_root_password_sha2: "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
+graylog_root_password: "password"
 graylog_http_bind_address: "127.0.0.1:9000"
 graylog_http_publish_uri: "http://127.0.0.1:9000/"
 graylog_http_external_uri: "http://testgraylog.test:10080/"
