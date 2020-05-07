@@ -34,11 +34,11 @@
           set_fact:
             server_api_token: "{{ returnedtoken.json  | json_query('token')  }}"
           when: returnedtoken is defined and returnedtoken.json is defined
-      when: server_api_token is not defined or server_api_token == ""
+      when: server_api_token is not defined or server_api_token | bool
     - name: Finally set the server_api_token to the right value
       set_fact:
         graylog_sidecar: "{{ graylog_sidecar | combine ( { 'server_api_token':  server_api_token } ) }}"
-  when: graylog_sidecar.server_api_token is not defined or graylog_sidecar.server_api_token == ""
+  when: graylog_sidecar.server_api_token is not defined or graylog_sidecar.server_api_token | bool
 
 - name: "Sidecar: Run OS specific Setups"
   include_tasks: "setup-packages-{{ ansible_os_family }}.yml"
@@ -71,4 +71,3 @@
     state: restarted
     enabled: true
   become: true
-

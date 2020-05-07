@@ -51,4 +51,3 @@ nginx_vhosts:
      }
 
 nginx_remove_default_vhost: True
-
