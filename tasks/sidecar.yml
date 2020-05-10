@@ -30,6 +30,7 @@
             headers:
               X-Requested-By: "cli"
           register: returnedtoken
+          ignore_errors: yes
         - name: Set the token value
           set_fact:
             server_api_token: "{{ returnedtoken.json  | json_query('token')  }}"
