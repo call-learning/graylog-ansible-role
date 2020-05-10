@@ -10,6 +10,8 @@
         user: "{{ graylog_root_username }}"
         password: "{{ graylog_root_password }}"
         method: GET
+        validate_certs: no
+      ignore_errors: yes
       register: graylogtokens
     - name: Get the first token
       set_fact:
@@ -29,16 +31,18 @@
             body: ""
             headers:
               X-Requested-By: "cli"
+            validate_certs: no
           register: returnedtoken
           ignore_errors: yes
         - name: Set the token value
           set_fact:
             server_api_token: "{{ returnedtoken.json  | json_query('token')  }}"
           when: returnedtoken is defined and returnedtoken.json is defined
-      when: server_api_token is not defined or server_api_token | bool
+      when: server_api_token is not defined or not (server_api_token | bool)
     - name: Finally set the server_api_token to the right value
       set_fact:
         graylog_sidecar: "{{ graylog_sidecar | combine ( { 'server_api_token':  server_api_token } ) }}"
+      when: server_api_token is defined
   when: graylog_sidecar.server_api_token is not defined or not (graylog_sidecar.server_api_token | bool)
 
 - name: "Sidecar: Run OS specific Setups"
