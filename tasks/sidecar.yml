@@ -38,7 +38,7 @@
     - name: Finally set the server_api_token to the right value
       set_fact:
         graylog_sidecar: "{{ graylog_sidecar | combine ( { 'server_api_token':  server_api_token } ) }}"
-  when: graylog_sidecar.server_api_token is not defined or graylog_sidecar.server_api_token | bool
+  when: graylog_sidecar.server_api_token is not defined or not (graylog_sidecar.server_api_token | bool)
 
 - name: "Sidecar: Run OS specific Setups"
   include_tasks: "setup-packages-{{ ansible_os_family }}.yml"
